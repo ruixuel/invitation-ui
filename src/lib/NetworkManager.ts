@@ -32,7 +32,7 @@ class NetworkManager {
                     resolve(response.data);
                 })
                 .catch(function (error) {
-                    console.error(error);
+                    console.log(error);
                     reject(error);
                 });
         });

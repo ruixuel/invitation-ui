@@ -17,21 +17,32 @@ export default function SuccessDialog(props: SuccessDialogProps) {
     };
 
     return (
-        <Dialog open={props.open} onClose={handleClose}>
+        <Dialog
+            open={props.open}
+            onClose={handleClose}
+            id="invitation-success-dialog"
+        >
             <DialogTitle
                 sx={{
                     fontStyle: "italic",
                 }}
+                id="invitation-success-dialog-title"
             >
                 <FormattedMessage id="all_done" />
             </DialogTitle>
             <DialogContent>
-                <DialogContentText id="success-dialog-text">
+                <DialogContentText id="invitation-success-dialog-text">
                     <FormattedMessage id="succes_msg" />
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button variant="outlined" fullWidth onClick={handleClose}>
+                <Button
+                    id="invitation-success-dialog-ok-button"
+                    variant="outlined"
+                    fullWidth
+                    onClick={handleClose}
+                    aria-label="ok"
+                >
                     <FormattedMessage id="ok" />
                 </Button>
             </DialogActions>

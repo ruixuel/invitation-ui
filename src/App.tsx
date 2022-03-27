@@ -7,14 +7,20 @@ import { ThemeProvider } from "@mui/material/styles";
 import { getTheme } from "./theme/theme";
 import InvitationApp from "./InvitationApp";
 
-function App() {
+type AppProps = {
+    locale?: string;
+    theme?: string;
+};
+
+function App(props: AppProps) {
     const searchParams = new URLSearchParams(window.location.search);
     const locale =
         searchParams.get("locale") ??
+        props.locale ??
         (!isNil(navigator.languages) && navigator.languages.length > 0
             ? navigator.languages[0]
             : navigator.language);
-    const themeMode = searchParams.get("theme") ?? "light";
+    const themeMode = searchParams.get("theme") ?? props.theme ?? "light";
     return (
         <IntlProvider
             messages={getMessages(locale)}

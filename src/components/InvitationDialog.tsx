@@ -4,11 +4,17 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Divider from "@mui/material/Divider";
+import Typography from "@mui/material/Typography";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useEffect, useState } from "react";
-import { validateEmail, validateStringLength } from "../utils/Utils";
+import {
+    isEmptyString,
+    validateEmail,
+    validateStringLength,
+} from "../utils/Utils";
 import ApiManager from "../lib/ApiManager";
-import { Typography } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 type InvitationDialogProps = {
     open: boolean;
@@ -27,6 +33,14 @@ interface ErrorState {
     confirmEmailError: string | null;
 }
 
+export const StyledDialogDivider = styled(Divider)(({ theme }) => {
+    return {
+        width: "50px",
+        borderColor: theme.palette.text.primary,
+        margin: "auto",
+    };
+});
+
 export default function InvitationDialog(props: InvitationDialogProps) {
     const intl = useIntl();
     const [loading, setLoading] = useState<boolean>(false);
@@ -42,16 +56,16 @@ export default function InvitationDialog(props: InvitationDialogProps) {
         confirmEmail: "",
     });
 
-    const validateConfirmEmail = () => {
-        return values.email === values.confirmEmail;
+    const validateConfirmEmail = (input: State) => {
+        return input.email === input.confirmEmail;
     };
 
-    const validateName = () => {
-        return validateStringLength(values.name, 3);
+    const validateName = (input: State) => {
+        return validateStringLength(input.name, 3);
     };
 
-    const validateEmailAddress = () => {
-        return validateEmail(values.email);
+    const validateEmailAddress = (input: State) => {
+        return validateEmail(input.email);
     };
 
     const handleChange =
@@ -62,7 +76,7 @@ export default function InvitationDialog(props: InvitationDialogProps) {
 
     useEffect(() => {
         if (inputError.nameError !== null) {
-            const isValid = validateName();
+            const isValid = validateName(values);
             if (isValid) {
                 setInputError({ ...inputError, nameError: null });
             }
@@ -71,11 +85,11 @@ export default function InvitationDialog(props: InvitationDialogProps) {
 
     useEffect(() => {
         if (inputError.emailError !== null) {
-            const isValid = validateEmailAddress();
+            const isValid = validateEmailAddress(values);
             if (isValid) {
                 setInputError({ ...inputError, emailError: null });
             }
-            const isConfirmEmailValid = validateConfirmEmail();
+            const isConfirmEmailValid = validateConfirmEmail(values);
             if (isConfirmEmailValid) {
                 setInputError({ ...inputError, confirmEmailError: null });
             }
@@ -84,7 +98,7 @@ export default function InvitationDialog(props: InvitationDialogProps) {
 
     useEffect(() => {
         if (inputError.confirmEmailError !== null) {
-            const isValid = validateConfirmEmail();
+            const isValid = validateConfirmEmail(values);
             if (isValid) {
                 setInputError({ ...inputError, confirmEmailError: null });
             }
@@ -100,12 +114,18 @@ export default function InvitationDialog(props: InvitationDialogProps) {
             email: "",
             confirmEmail: "",
         });
+        setError(null);
+        setInputError({
+            nameError: null,
+            emailError: null,
+            confirmEmailError: null,
+        });
     };
 
     const handleOnSubmit = () => {
-        const isNameValid = validateName();
-        const isEmailValid = validateEmailAddress();
-        const isConfirmEmailValid = validateConfirmEmail();
+        const isNameValid = validateName(values);
+        const isEmailValid = validateEmailAddress(values);
+        const isConfirmEmailValid = validateConfirmEmail(values);
         const isInputValid = isNameValid && isEmailValid && isConfirmEmailValid;
         const errorMsg: ErrorState = {
             nameError: null,
@@ -128,6 +148,11 @@ export default function InvitationDialog(props: InvitationDialogProps) {
                         confirmEmail: "",
                     });
                     setError(null);
+                    setInputError({
+                        nameError: null,
+                        emailError: null,
+                        confirmEmailError: null,
+                    });
                 })
                 .catch((error) => {
                     const errorText =
@@ -147,20 +172,30 @@ export default function InvitationDialog(props: InvitationDialogProps) {
                 errorMsg.confirmEmailError = intl.formatMessage({
                     id: "confirm_email_error",
                 });
+            } else if (!isEmailValid) {
+                errorMsg.confirmEmailError = intl.formatMessage({
+                    id: "email_error",
+                });
             }
             setInputError(errorMsg);
         }
     };
 
     return (
-        <Dialog open={props.open} onClose={handleClose}>
-            <DialogTitle>
+        <Dialog
+            open={props.open}
+            onClose={handleClose}
+            id="invitation-register-dialog"
+            aria-label="invitation-register-dialog"
+        >
+            <DialogTitle id="invitation-register-dialog-title">
                 <FormattedMessage id="request_an_invite" />
             </DialogTitle>
+            <StyledDialogDivider />
             <DialogContent>
                 <TextField
                     margin="dense"
-                    id="name"
+                    id="invitation-register-dialog-name"
                     required
                     label={intl.formatMessage({ id: "full_name" })}
                     fullWidth
@@ -168,10 +203,12 @@ export default function InvitationDialog(props: InvitationDialogProps) {
                     onChange={handleChange("name")}
                     error={inputError.nameError !== null}
                     helperText={inputError.nameError}
+                    disabled={loading}
+                    inputProps={{ "aria-label": "name-input" }}
                 />
                 <TextField
                     margin="dense"
-                    id="name"
+                    id="invitation-register-dialog-email"
                     required
                     label={intl.formatMessage({ id: "email" })}
                     type="email"
@@ -180,10 +217,12 @@ export default function InvitationDialog(props: InvitationDialogProps) {
                     onChange={handleChange("email")}
                     error={inputError.emailError !== null}
                     helperText={inputError.emailError}
+                    disabled={loading}
+                    inputProps={{ "aria-label": "email-input" }}
                 />
                 <TextField
                     margin="dense"
-                    id="name"
+                    id="invitation-register-dialog-confirm-email"
                     required
                     label={intl.formatMessage({ id: "confirm_email" })}
                     type="email"
@@ -192,6 +231,8 @@ export default function InvitationDialog(props: InvitationDialogProps) {
                     onChange={handleChange("confirmEmail")}
                     error={inputError.confirmEmailError !== null}
                     helperText={inputError.confirmEmailError}
+                    disabled={loading}
+                    inputProps={{ "aria-label": "confirm-email-input" }}
                 />
             </DialogContent>
             <DialogActions>
@@ -200,6 +241,8 @@ export default function InvitationDialog(props: InvitationDialogProps) {
                     onClick={handleOnSubmit}
                     disabled={loading}
                     fullWidth
+                    id="invitation-register-dialog-send-button"
+                    aria-label="send"
                 >
                     {loading ? (
                         <FormattedMessage id="sending_please_wait" />

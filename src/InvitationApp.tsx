@@ -9,11 +9,14 @@ import Button from "@mui/material/Button";
 import InvitationDialog from "./components/InvitationDialog";
 import SuccessDialog from "./components/SuccessDialog";
 
-const StyledBox = styled(Box)({
-    width: "100%",
-    height: "60px",
-    position: "fixed",
-    zIndex: 10,
+const StyledBox = styled(Box)(({ theme }) => {
+    return {
+        width: "100%",
+        height: "60px",
+        position: "fixed",
+        zIndex: 10,
+        backgroundColor: theme.palette.background.default,
+    };
 });
 
 const FlexBox = styled(Box)({
@@ -52,14 +55,15 @@ export default function InvitationApp() {
     };
 
     return (
-        <Box sx={{ height: "100%", minWidth: "300px" }}>
+        <Box sx={{ height: "100%", minWidth: "300px" }} id="invitation-app">
             <StyledBox
                 sx={{
                     display: "flex",
                     alignItems: "center",
                     borderBottom: `1px solid ${borderColor}`,
-                    marginLeft: "10px",
+                    paddingLeft: "10px",
                 }}
+                id="invitation-app-header"
             >
                 <Logo />
                 <Typography
@@ -80,7 +84,9 @@ export default function InvitationApp() {
                     paddingBottom: "60px",
                     paddingTop: "60px",
                     height: "100%",
+                    backgroundColor: "background.paper",
                 }}
+                id="invitation-app-body"
             >
                 <Typography
                     variant="h2"
@@ -100,7 +106,11 @@ export default function InvitationApp() {
                 <Typography variant="body2" sx={{ padding: "10px" }}>
                     <FormattedMessage id="be_the_first_to_know_when_we_launch" />
                 </Typography>
-                <Button variant="outlined" onClick={handleClick}>
+                <Button
+                    variant="outlined"
+                    onClick={handleClick}
+                    aria-label="Request an invite"
+                >
                     <FormattedMessage id="request_an_invite" />
                 </Button>
                 <InvitationDialog
@@ -120,6 +130,7 @@ export default function InvitationApp() {
                     justifyContent: "center",
                     borderTop: `1px solid ${borderColor}`,
                 }}
+                id="invitation-app-footer"
             >
                 <FlexBox>
                     <FooterTypography variant="body2">

@@ -155,6 +155,7 @@
     "@typescript-eslint/parser": "^5.16.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.4",
+    "msw": "^0.39.2",
     "webpack-bundle-analyzer": "^4.5.0"
   },
   "lint-staged": {
